@@ -7,11 +7,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:sort_by]
+    @all_ratings = Movie.ratings
+    if valid_sort_option? params[:sort_by]
       @movies = Movie.order(params[:sort_by])
     else
-      @movies = Movie.all
+      @movies = Movie.scoped
     end
+
+    unless params[:ratings].blank?
+      params[:ratings].each_key do |key|
+        puts key, '='*80
+        @movies = @movies.where(rating: key)
+      end
+    end
+    @movies
   end
 
   def new
@@ -42,4 +51,9 @@ class MoviesController < ApplicationController
     redirect_to movies_path
   end
 
+  private
+
+  def valid_sort_option? option
+    %w(title release_date).include? option
+  end
 end
