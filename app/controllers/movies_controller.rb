@@ -8,19 +8,12 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.ratings
-    if valid_sort_option? params[:sort_by]
-      @movies = Movie.order(params[:sort_by])
-    else
-      @movies = Movie.scoped
-    end
+    @movies = Movie.scoped
+    @movies = @movies.order(params[:sort_by]) if valid_sort_option? params[:sort_by]
 
-    unless params[:ratings].blank?
-      checked_ratings = []
-      params[:ratings].each_key do |key|
-        checked_ratings << key
-      end
-      @movies = @movies.where(rating: checked_ratings)
-    end
+    checked_ratings = []
+    params[:ratings].each { |key, value| checked_ratings << key } if params[:ratings]
+    @movies = @movies.where(rating: checked_ratings) unless checked_ratings.empty?
     @movies
   end
 
