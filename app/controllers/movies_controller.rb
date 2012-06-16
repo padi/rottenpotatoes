@@ -9,7 +9,13 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.ratings
     @movies = Movie.scoped
-    @movies = @movies.order(params[:sort_by]) if valid_sort_option? params[:sort_by]
+
+    if params[:sort_by]
+      session[:sort_by] = params[:sort_by]
+      @movies = @movies.order_by_rating(params[:sort_by])
+    elsif session[:sort_by]
+      @movies = @movies.order_by_rating(session[:sort_by])
+    end
 
     checked_ratings = []
     params[:ratings].each { |key, value| checked_ratings << key } if params[:ratings]
