@@ -12,8 +12,12 @@ class MoviesController < ApplicationController
 
     checked_ratings = []
 
-    session[:sort_by] = params[:sort_by] unless params[:sort_by].blank?
-    session[:ratings] = params[:ratings] unless params[:ratings].blank?
+    params[:sort_by] ||= session[:sort_by]
+    session[:sort_by] = params[:sort_by]
+
+    params[:ratings] ||= session[:ratings]
+    session[:ratings]  = params[:ratings]
+
 
     @movies = @movies.order_by_rating(session[:sort_by]) unless session[:sort_by].blank?
 
