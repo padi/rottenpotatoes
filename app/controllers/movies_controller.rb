@@ -10,16 +10,16 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.ratings
     @movies = Movie.scoped
 
-    if params[:sort_by]
-      session[:sort_by] = params[:sort_by]
-      @movies = @movies.order_by_rating(params[:sort_by])
-    elsif session[:sort_by]
-      @movies = @movies.order_by_rating(session[:sort_by])
-    end
-
     checked_ratings = []
-    params[:ratings].each { |key, value| checked_ratings << key } if params[:ratings]
+
+    session[:sort_by] = params[:sort_by] unless params[:sort_by].blank?
+    session[:ratings] = params[:ratings] unless params[:ratings].blank?
+
+    @movies = @movies.order_by_rating(session[:sort_by]) unless session[:sort_by].blank?
+
+    session[:ratings].each { |key, value| checked_ratings << key } unless session[:ratings].blank?
     @movies = @movies.where(rating: checked_ratings) unless checked_ratings.empty?
+
     @movies
   end
 
