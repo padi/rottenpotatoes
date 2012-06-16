@@ -10,21 +10,19 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.ratings
     @movies = Movie.scoped
 
+    session[:sort_by] = params[:sort_by] || session[:sort_by]
+    session[:ratings] = params[:ratings] || session[:ratings]
+
+    @movies = @movies.order_by_rating(params[:sort_by]) unless params[:sort_by].blank?
+
     checked_ratings = []
-
-    params[:sort_by] ||= session[:sort_by]
-    session[:sort_by] = params[:sort_by]
-
-    params[:ratings] ||= session[:ratings]
-    session[:ratings]  = params[:ratings]
-
-
-    @movies = @movies.order_by_rating(session[:sort_by]) unless session[:sort_by].blank?
-
-    session[:ratings].each { |key, value| checked_ratings << key } unless session[:ratings].blank?
+    params[:ratings].each { |key, value| checked_ratings << key } unless params[:ratings].blank?
     @movies = @movies.where(rating: checked_ratings) unless checked_ratings.empty?
 
-    @movies
+    if params_missing && session_exists
+      flash.keep
+      redirect_to movies_path(sort_by: session[:sort_by], ratings: session[:ratings])
+    end
   end
 
   def new
@@ -59,5 +57,13 @@ class MoviesController < ApplicationController
 
   def valid_sort_option? option
     %w(title release_date).include? option
+  end
+
+  def params_missing
+    params[:sort_by].blank? && params[:ratings].blank?
+  end
+
+  def session_exists
+    session[:sort_by] || session[:ratings]
   end
 end
