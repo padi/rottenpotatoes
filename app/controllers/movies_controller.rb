@@ -15,10 +15,11 @@ class MoviesController < ApplicationController
     end
 
     unless params[:ratings].blank?
+      checked_ratings = []
       params[:ratings].each_key do |key|
-        puts key, '='*80
-        @movies = @movies.where(rating: key)
+        checked_ratings << key
       end
+      @movies = @movies.where(rating: checked_ratings)
     end
     @movies
   end

@@ -8,4 +8,8 @@ module MoviesHelper
   def highlight_if_clicked(page_info={})
     "hilite" if current_page?(page_info)
   end
+
+  def is_checked? rating
+    params[:ratings] && params[:ratings].include?(rating)
+  end
 end
