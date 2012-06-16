@@ -10,7 +10,7 @@ module MoviesHelper
   end
 
   def is_checked? rating
-    params[:ratings] && params[:ratings].include?(rating)
+    session[:ratings] && session[:ratings].include?(rating)
   end
 
   def highlighted_header_link_to body, url, html_options = {}
